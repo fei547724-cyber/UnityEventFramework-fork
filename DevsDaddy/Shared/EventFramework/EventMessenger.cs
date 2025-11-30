@@ -15,12 +15,19 @@ namespace DevsDaddy.Shared.EventFramework
     /// </summary>
     public class EventMessenger : Singleton<IEventMessenger, EventMessenger>, IEventMessenger
     {
-        // Subscribers Collection
+        /// <summary>
+        /// // Subscribers Collection订阅者字典 也就是对于每一种可以被订阅的类 作为key  value为内层字典，存储这个事件类型的所有订阅者。
+        /// </summary>
         private readonly Dictionary<Type, Dictionary<int, EventSubscriber>> _subscribersSet = 
             new Dictionary<Type, Dictionary<int, EventSubscriber>>();
         
         // List of subscribers to optimize iteration during subscribers processing  
+        /// <summary>
+        /// 所有订阅者的列表
+        /// </summary>
         private readonly List<EventSubscriber> _subscribers = new List<EventSubscriber>();
+        
+        //缓存事件上一次最新的数据 以方便直接使用 
         private readonly Dictionary<Type, IPayload> _payloadStates = new Dictionary<Type, IPayload>();
 
         // List of subscribers to optimize add (subscribe) operation 
@@ -62,10 +69,11 @@ namespace DevsDaddy.Shared.EventFramework
         /// </summary>
         /// <remarks>
         /// Internal function that is used with "MainThreadDispatcher"
+        /// 发布事件
         /// </remarks>
         /// <param name="payload">The payload</param>
         /// <typeparam name="T">The type of the payload</typeparam>
-        private void PublishInternal<T>(T payload) where T : IPayload
+        private void PublishInternal<T>(T payload) where T : IPayload //payload实际上就是类的实例 作为数据 类是事件本身
         {
             try
             {
@@ -294,7 +302,7 @@ namespace DevsDaddy.Shared.EventFramework
         /// <summary>
         /// Get Current Payload State
         /// </summary>
-        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="T"></typeparam>获取事件最新状态数据的方法
         /// <returns></returns>
         public T GetState<T>() where T : class, IPayload  {
             var key = typeof(T);
